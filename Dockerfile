@@ -14,7 +14,12 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.base.json tsconfig
 # Copy all package.json files for workspace resolution
 COPY lib/db/package.json ./lib/db/package.json
 COPY lib/api-zod/package.json ./lib/api-zod/package.json
+COPY lib/api-client-react/package.json ./lib/api-client-react/package.json
+COPY lib/api-spec/package.json ./lib/api-spec/package.json
+COPY scripts/package.json ./scripts/package.json
 COPY artifacts/api-server/package.json ./artifacts/api-server/package.json
+COPY artifacts/discharge-buddy/package.json ./artifacts/discharge-buddy/package.json
+COPY artifacts/mockup-sandbox/package.json ./artifacts/mockup-sandbox/package.json
 
 # Install dependencies using the lockfile (reproducible builds)
 RUN pnpm install --frozen-lockfile
@@ -41,15 +46,22 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY artifacts/api-server/package.json ./artifacts/api-server/package.json
 COPY lib/db/package.json ./lib/db/package.json
 COPY lib/api-zod/package.json ./lib/api-zod/package.json
+COPY lib/api-client-react/package.json ./lib/api-client-react/package.json
+COPY lib/api-spec/package.json ./lib/api-spec/package.json
+COPY scripts/package.json ./scripts/package.json
+COPY artifacts/discharge-buddy/package.json ./artifacts/discharge-buddy/package.json
+COPY artifacts/mockup-sandbox/package.json ./artifacts/mockup-sandbox/package.json
 
 # Install ONLY production dependencies
 RUN pnpm install --frozen-lockfile --prod
 
-# Copy the built dist from builder stage
+# Copy the built dist and migrations
 COPY --from=builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
+COPY --from=builder /app/artifacts/api-server/run_migration.mjs ./artifacts/api-server/run_migration.mjs
+COPY --from=builder /app/lib/db/drizzle ./lib/db/drizzle
 
 # GCP Cloud Run injects $PORT at runtime (default 8080)
-# The app must listen on process.env.PORT
 EXPOSE 8080
 
-CMD ["node", "--enable-source-maps", "./artifacts/api-server/dist/index.mjs"]
+# Run migrations and start server
+CMD ["sh", "-c", "node ./artifacts/api-server/run_migration.mjs && node --enable-source-maps ./artifacts/api-server/dist/index.mjs"]

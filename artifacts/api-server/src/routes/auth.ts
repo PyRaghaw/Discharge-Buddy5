@@ -877,10 +877,10 @@ router.post("/update-token", requireAuth, async (req: AuthRequest, res) => {
       .where(eq(users.id, req.user!.id));
       
     logger.info({ userId: req.user!.id }, "Push token updated");
-    res.json({ success: true });
+    return res.json({ success: true });
   } catch (error) {
     logger.error({ err: error }, "Update Token Error");
-    res.status(500).json({ error: "Failed to update token" });
+    return res.status(500).json({ error: "Failed to update token" });
   }
 });
 

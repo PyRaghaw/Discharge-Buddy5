@@ -13,8 +13,19 @@ web-build
 .env
 .env.*
 !.env.example
-artifacts/discharge-buddy
 attached_assets
 *.md
 PPT Assests
 scratch
+
+# Optimize build context by keeping package.json but ignoring other source files
+artifacts/discharge-buddy/*
+!artifacts/discharge-buddy/package.json
+artifacts/mockup-sandbox/*
+!artifacts/mockup-sandbox/package.json
+lib/api-client-react/*
+!lib/api-client-react/package.json
+lib/api-spec/*
+!lib/api-spec/package.json
+scripts/*
+!scripts/package.json

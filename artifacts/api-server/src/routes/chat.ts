@@ -75,10 +75,10 @@ router.get("/history/:otherUserId", requireAuth, async (req: AuthRequest, res: R
       )
       .orderBy(asc(messages.createdAt));
       
-    res.json(history);
+    return res.json(history);
   } catch (err) {
     logger.error({ err }, "Fetch Chat History Error");
-    res.status(500).json({ error: "Failed to fetch history" });
+    return res.status(500).json({ error: "Failed to fetch history" });
   }
 });
 
@@ -145,10 +145,10 @@ router.post("/send", requireAuth, async (req: AuthRequest, res: Response) => {
       }
     }
     
-    res.json(newMessage);
+    return res.json(newMessage);
   } catch (err) {
     logger.error({ err }, "Send Message Error");
-    res.status(500).json({ error: "Failed to send message" });
+    return res.status(500).json({ error: "Failed to send message" });
   }
 });
 

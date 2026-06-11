@@ -411,6 +411,7 @@ interface AppContextType {
   // Drug interactions
   drugInteractions: DrugInteraction[];
   recoverySuggestion: { title: string; body: string; type: 'calm' | 'sleep' | 'reset' } | null;
+  token: string | null;
   // Actions
   setRole: (role: UserRole) => void;
   setUser: (user: AppUser) => void;
@@ -492,6 +493,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     title: "",
     body: "",
   });
+  const [token, setToken] = useState<string | null>(null);
 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingTargetId, setSpeakingTargetId] = useState<string | null>(null);
@@ -522,6 +524,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   async function initApp() {
     try {
       const token = await AsyncStorage.getItem("discharge_buddy_token");
+      if (token) setToken(token);
       const raw = await AsyncStorage.getItem(STORAGE_KEY);
       
       if (dataProvider instanceof MockProvider) {
@@ -1003,6 +1006,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (userData: AppUser, token: string, method: AuthMethod = "password") => {
     await AsyncStorage.setItem("discharge_buddy_token", token);
+    setToken(token);
 
     // Batch updates to state and storage to prevent race conditions
     setUserState(userData);
@@ -1045,6 +1049,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     // Wipe conversation memory for this user (privacy — voice transcripts).
     clearConversationHistory(user?.email || "guest").catch(() => {});
     AsyncStorage.removeItem("discharge_buddy_token");
+    setToken(null);
     AsyncStorage.removeItem(STORAGE_KEY);
     setUserState(null);
     setAuthMethodState(null);
@@ -1188,6 +1193,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         streak, xp, achievements, doseHistory, lastXPGain, journalEntries,
         drugInteractions: checkInteractions(medicines),
         recoverySuggestion,
+        token,
         setRole, setUser, addMedicine, updateMedicine, deleteMedicine, updateDoseStatus, addSymptomLog, addFollowUp,
         completeFollowUp, setOnboarded, setHapticsEnabled, triggerEmergency, setLanguage, addPrescription,
         addJournalEntry, awardXP, unlockAchievement, login, logout, resetOnboarding, switchProvider,

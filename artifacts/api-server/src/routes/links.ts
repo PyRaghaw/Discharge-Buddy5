@@ -206,7 +206,7 @@ router.get("/pending", async (req: AuthRequest, res) => {
 router.post("/:managerId/approve", async (req: AuthRequest, res) => {
   try {
     const patientId = req.user?.linkedPatientId;
-    const managerId = req.params.managerId;
+    const managerId = req.params.managerId as string;
     if (!patientId) return res.status(400).json({ error: "No patient profile found." });
 
     await db.update(careLinks)
@@ -231,7 +231,7 @@ router.post("/:managerId/approve", async (req: AuthRequest, res) => {
 router.post("/:managerId/reject", async (req: AuthRequest, res) => {
   try {
     const patientId = req.user?.linkedPatientId;
-    const managerId = req.params.managerId;
+    const managerId = req.params.managerId as string;
     if (!patientId) return res.status(400).json({ error: "No patient profile found." });
 
     await db.update(careLinks)
