@@ -59,6 +59,7 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/artifacts/api-server/dist ./artifacts/api-server/dist
 COPY --from=builder /app/artifacts/api-server/run_migration.mjs ./artifacts/api-server/run_migration.mjs
 COPY --from=builder /app/lib/db/drizzle ./lib/db/drizzle
+COPY --from=builder /app/.env ./.env
 
 # GCP Cloud Run injects $PORT at runtime (default 8080)
 EXPOSE 8080
