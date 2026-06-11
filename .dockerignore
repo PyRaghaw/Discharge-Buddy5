@@ -10,6 +10,9 @@ __pycache__
 web-build
 .npm
 .cache
+.env
+.env.*
+!.env.example
 attached_assets
 *.md
 PPT Assests
